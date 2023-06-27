@@ -1,0 +1,49 @@
+version: "3"
+
+vars:
+  TF_DIR: terraform
+  TF_WORKSPACE: quark/site-made-by-ai
+  PROFILE: liederbach-sso
+
+tasks:
+  init:
+    desc: Initialize the project locally
+    dir: "{{.TF_DIR}}"
+    cmds:
+      - task: init:force
+    sources:
+      - ./**/*.tf
+    generates:
+      - ./.terraform/modules/modules.json
+  init:force:
+    desc: Force Initialize the project locally
+    dir: "{{.TF_DIR}}"
+    cmds:
+      - terraform init
+  plan:
+    desc: Show expected changes
+    dir: "{{.TF_DIR}}"
+    deps:
+      - init
+    cmds:
+      - AWS_PROFILE={{.PROFILE}} terraform plan
+  apply:
+    desc: Apply changes
+    dir: "{{.TF_DIR}}"
+    deps:
+      - init
+    cmds:
+      - AWS_PROFILE={{.PROFILE}} terraform apply
+  unlock:
+    desc: Apply changes
+    dir: "{{.TF_DIR}}"
+    cmds:
+      - AWS_PROFILE={{.PROFILE}} terraform force-unlock {{.TF_WORKSPACE}}
+  test:
+    desc: Test AWS resources
+    dir: "{{.TF_DIR}}"
+    deps:
+      - init
+    cmds:
+      - terraform fmt --check
+      - terraform validate
