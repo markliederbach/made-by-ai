@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Planet Swirl</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: black;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #earth {
+            position: relative;
+            z-index: 1;
+            width: 150px;
+            height: 150px;
+            background:
+                radial-gradient(circle at 50% 60%, #0099ff 10%, #003366 28%, transparent 70%),
+                radial-gradient(circle at 45% 50%, #0099ff 35%, #003366 50%, transparent 70%),
+                radial-gradient(circle at 50% 40%, #0099ff 10%, #003366 28%, transparent 70%);
+            border-radius: 50%;
+            animation: spin 10s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background-color: white;
+            border-radius: 50%;
+            z-index: 0;
+            opacity: 0.5;
+            animation: twinkle 1s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            color: white;
+            font-size: 1em;
+            padding: 1em;
+            z-index: 2;
+        }
+    </style>
+</head>
+<body>
+    <div id="earth"></div>
+    <footer id="footer">
+        &copy; <span id="year"></span> Mark Liederbach
+    </footer>
+    <script>
+        window.onload = function() {
+            // Set the current year
+            document.getElementById('year').textContent = new Date().getFullYear();
+
+            const earth = document.getElementById('earth');
+            const earthRect = earth.getBoundingClientRect();
+            for(let i=0; i<200; i++) {
+                let star = document.createElement('div');
+                star.className = 'star';
+                let left, top;
+                do {
+                    left = Math.random() * window.innerWidth;
+                    top = Math.random() * window.innerHeight;
+                } while (
+                    left > earthRect.left && left < earthRect.right &&
+                    top > earthRect.top && top < earthRect.bottom
+                );
+                star.style.left = left + 'px';
+                star.style.top = top + 'px';
+                // Randomly delay the start of the animation
+                star.style.animationDelay = Math.random() * 2 + 's';
+                document.body.appendChild(star);
+            }
+        }
+    </script>
+</body>
+</html>

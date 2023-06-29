@@ -1,0 +1,22 @@
+# https://taskfile.dev
+
+version: '3'
+
+includes:
+  terraform: terraform
+
+tasks:
+  sso:login:
+    desc: Login to AWS SSO
+    cmds:
+      - aws sso login --profile liederbach-sso
+      - open https://liederbach.awsapps.com/start
+      - code ~/.aws/credentials
+
+  upload:
+    desc: Upload the build artifact to S3
+    dir: public
+    vars:
+      PROFILE: liederbach-sso
+    cmds:
+      - AWS_PROFILE={{.PROFILE}} aws s3 sync . s3://ai.liederbach.dev --sse AES256 --delete

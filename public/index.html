@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>#MadeByAI</title>
+    <style>
+        body {
+            background-color: #222;
+            color: #fff;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 50px;
+            font-family: Arial, sans-serif;
+        }
+
+        .tile {
+            background-color: #333;
+            width: 200px;
+            height: 200px;
+            margin: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            transition: background-color 0.3s;
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px; /* Rounded corners */
+        }
+
+        .tile img {
+            position: absolute;
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+            border-radius: 10px; /* Rounded corners for image */
+        }
+
+        .tile a {
+            color: #fff;
+            text-decoration: none;
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tile span {
+            position: relative;
+            z-index: 2;
+            color: white;
+        }
+
+        .tile:hover {
+            cursor: pointer;
+        }
+
+        .tile:hover img {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <a href="/planet" target="_blank" class="tile">
+        <img src="/images/planet.png" alt="Planet Swirl">
+        <span>Planet Swirl</span>
+    </a>
+</body>
+</html>
