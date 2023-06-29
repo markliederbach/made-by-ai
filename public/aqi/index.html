@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Air Quality Index</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen">
+    <div class="flex flex-col items-center w-full px-4">
+        <h1 class="text-3xl md:text-4xl mb-4">Air Quality Index</h1>
+        <h2 id="aqi_header" class="text-xl md:text-2xl mb-6 text-gray-400"></h2>
+        <table id="aqi_table" class="table-auto text-left whitespace-nowrap bg-gray-700 rounded-lg shadow-lg overflow-hidden w-full md:max-w-2xl">
+            <thead class="bg-gray-800">
+                <tr>
+                    <th>Time</th>
+                    <th>AQI</th>
+                    <th>Meaning</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Rows will be added here by the script -->
+            </tbody>
+        </table>
+    </div>
+    <script>
+        const categories = [
+            { name: "Good", color: "rgb(0, 228, 0)", range: [0, 50], description: "Air quality is satisfactory, and air pollution poses little or no risk." },
+            { name: "Moderate", color: "yellow", range: [51, 100], description: "Air quality is acceptable. However, there may be a risk for some people, particularly those who are unusually sensitive to air pollution." },
+            { name: "Unhealthy for Sensitive Groups", color: "rgb(255, 126, 0)", range: [101, 150], description: "Members of sensitive groups may experience health effects. The general public is less likely to be affected." },
+            { name: "Unhealthy for Everyone", color: "red", range: [151, 200], description: "Some members of the general public may experience health effects; members of sensitive groups may experience more serious health effects." },
+            { name: "Very Unhealthy", color: "rgb(143, 63, 151)", range: [201, 300], description: "The risk of health effects is increased for everyone." },
+            { name: "Hazardous", color: "rgb(126, 0, 35)", range: [301, Infinity], description: "Everyone is more likely to be affected." }
+        ];
+
+        function getCategory(aqi) {
+            return categories.find(category => aqi >= category.range[0] && aqi <= category.range[1]);
+        }
+
+        // Get the user's IP address
+        fetch('https://ipapi.co/json/')
+            .then(response => response.json())
+            .then(data => {
+                const lat = data.latitude;
+                const lon = data.longitude;
+                const city = data.city;
+                const region = data.region;
+
+                // Display the city and region
+                document.getElementById('aqi_header').innerText = `Next 6 hours for ${city}, ${region}`;
+
+                // Then use the latitude and longitude to get the AQI
+                const aqiApiUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&hourly=us_aqi&timezone=auto`;
+                fetch(aqiApiUrl)
+                    .then(response => response.json())
+                    .then(data => {
+                        const timeArray = data.hourly.time;
+                        const aqiArray = data.hourly.us_aqi;
+                        const table = document.getElementById('aqi_table');
+
+                        const currentHour = new Date().getHours();
+
+                        for(let i = 0; i < timeArray.length; i++) {
+                            const hour = new Date(timeArray[i]).getHours();
+                            if(hour >= currentHour && table.rows.length <= 6) {
+                                const row = table.insertRow(-1);
+                                row.className = 'border-t border-gray-600';
+                                const cell1 = row.insertCell(0);
+                                const cell2 = row.insertCell(1);
+                                const cell3 = row.insertCell(2);
+                                cell1.innerText = `${('0' + hour).slice(-2)}:${('0' + new Date(timeArray[i]).getMinutes()).slice(-2)}`;
+                                cell2.innerText = aqiArray[i];
+
+                                const aqiCategory = getCategory(aqiArray[i]);
+
+                                cell3.innerText = `${aqiCategory.name}`;
+                                cell2.style.color = aqiCategory.color;
+
+                                row.title = aqiCategory.description;
+                            }
+                        }
+                    });
+            });
+    </script>
+</body>
+</html>
