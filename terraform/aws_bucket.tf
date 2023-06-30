@@ -55,6 +55,21 @@ resource "aws_s3_bucket_acl" "hosting_bucket" {
   acl    = "public-read"
 }
 
+resource "aws_s3_bucket_cors_configuration" "hosting_bucket" {
+  bucket = aws_s3_bucket.hosting_bucket.id
+
+  cors_rule {
+    allowed_methods = ["GET"]
+    allowed_origins = [
+      "https://cdn.jsdelivr.net",
+      "https://ai.liederbach.dev",
+      "https://static.cloudflareinsights.com",
+      "https://air-quality-api.open-meteo.com",
+      "https://ipapi.co",
+    ]
+  }
+}
+
 data "aws_iam_policy_document" "hosting_bucket" {
   statement {
     sid    = "RequireEncryptedStorage"
