@@ -62,7 +62,7 @@ resource "aws_s3_bucket_cors_configuration" "hosting_bucket" {
     allowed_methods = ["GET"]
     allowed_origins = [
       "https://cdn.jsdelivr.net",
-      "https://ai.liederbach.dev",
+      "https://${local.domain}",
       "https://static.cloudflareinsights.com",
       "https://air-quality-api.open-meteo.com",
       "https://ipapi.co",
