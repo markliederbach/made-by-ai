@@ -21,8 +21,13 @@
                 <!-- Rows will be added here by the script -->
             </tbody>
         </table>
-    </div>
+        <footer id="footer" class="w-full text-center py-4 mt-auto fixed inset-x-0 bottom-0">
+            &copy; <span id="year"></span> Mark Liederbach
+        </footer>
+        </div>
     <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+
         const categories = [
             { name: "Good", color: "rgb(0, 228, 0)", range: [0, 50], description: "Air quality is satisfactory, and air pollution poses little or no risk." },
             { name: "Moderate", color: "yellow", range: [51, 100], description: "Air quality is acceptable. However, there may be a risk for some people, particularly those who are unusually sensitive to air pollution." },
