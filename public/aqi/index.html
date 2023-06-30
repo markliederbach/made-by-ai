@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Air Quality Index</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
 </head>
+
 <body class="bg-gray-900 text-white flex items-center justify-center min-h-screen">
     <div class="flex flex-col items-center w-full px-4">
         <h1 class="text-3xl md:text-4xl mb-4">Air Quality Index</h1>
@@ -13,15 +15,20 @@
             <div class="flex flex-wrap -mx-3 mb-6">
                 <div class="flex flex-row items-center w-full px-3">
                     <div class="flex items-center flex-grow">
-                        <input class="appearance-none block w-full bg-gray-800 text-gray-200 border border-gray-400 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-gray-800" id="zip" placeholder="Enter a ZIP code" type="text" name="zip">
+                        <input
+                            class="appearance-none block w-full bg-gray-800 text-gray-200 border border-gray-400 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-gray-800"
+                            id="zip" placeholder="Enter a ZIP code" type="text" name="zip">
                     </div>
                     <div class="flex items-center ml-4">
-                        <input class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow" type="submit" value="Search">
+                        <input
+                            class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
+                            type="submit" value="Search">
                     </div>
                 </div>
             </div>
         </form>
-        <table id="aqi_table" class="table-auto text-left whitespace-nowrap bg-gray-700 rounded-lg shadow-lg overflow-hidden w-full md:max-w-2xl">
+        <table id="aqi_table"
+            class="table-auto text-left whitespace-nowrap bg-gray-700 rounded-lg shadow-lg overflow-hidden w-full md:max-w-2xl">
             <thead class="bg-gray-800">
                 <tr>
                     <th>Time</th>
@@ -36,7 +43,7 @@
         <footer id="footer" class="w-full text-center py-4 mt-auto fixed inset-x-0 bottom-0">
             &copy; <span id="year"></span> Mark Liederbach
         </footer>
-        </div>
+    </div>
     <script>
         document.getElementById('year').textContent = new Date().getFullYear();
 
@@ -67,14 +74,14 @@
             const offset = currentDate.getTimezoneOffset();
 
             // format to YYYY-MM-DD
-            currentDate = new Date(currentDate.getTime() - (offset*60*1000));
+            currentDate = new Date(currentDate.getTime() - (offset * 60 * 1000));
             const formattedToday = currentDate.toISOString().split('T')[0];
 
             // get tomorrow's date by adding 1 day to the current date
             let tomorrowDate = new Date(currentDate);
             tomorrowDate.setDate(tomorrowDate.getDate() + 1);
             // format to YYYY-MM-DD
-            tomorrowDate = new Date(tomorrowDate.getTime() - (offset*60*1000));
+            tomorrowDate = new Date(tomorrowDate.getTime() - (offset * 60 * 1000));
             const formattedTomorrow = tomorrowDate.toISOString().split('T')[0];
 
             // Then use the latitude and longitude to get the AQI
@@ -87,16 +94,16 @@
                     const table = document.getElementById('aqi_table');
 
                     // if aqiArray has results, clear the table
-                    if(aqiArray.length > 0) {
+                    if (aqiArray.length > 0) {
                         while (table.rows.length > 1) {
                             table.deleteRow(1);
                         }
                     }
 
-                    let currentDateTime = currentDate.toISOString().slice(0,13) + ":00";
+                    let currentDateTime = currentDate.toISOString().slice(0, 13) + ":00";
                     let startDateTime = timeArray.find(dateTime => dateTime === currentDateTime);
                     const startIndex = timeArray.findIndex(dateTime => dateTime === currentDateTime);
-                    for(let i = startIndex; i < (startIndex + 6); i++) {
+                    for (let i = startIndex; i < (startIndex + 6); i++) {
                         const hour = new Date(timeArray[i]).getHours();
                         const row = table.insertRow(-1);
                         row.className = 'border-t border-gray-600';
@@ -156,7 +163,7 @@
         }
 
         // Add an event listener for the form submission
-        document.getElementById('location_form').addEventListener('submit', function(event) {
+        document.getElementById('location_form').addEventListener('submit', function (event) {
             // Prevent the form from submitting normally
             event.preventDefault();
 
@@ -179,4 +186,5 @@
         });
     </script>
 </body>
+
 </html>
