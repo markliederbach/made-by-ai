@@ -64,6 +64,7 @@ resource "aws_s3_bucket_cors_configuration" "hosting_bucket" {
       "https://cdn.jsdelivr.net",
       "https://${local.domain}",
       "https://static.cloudflareinsights.com",
+      "https://api.zippopotam.us",
       "https://air-quality-api.open-meteo.com",
       "https://ipapi.co",
     ]
