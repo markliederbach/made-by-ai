@@ -48,8 +48,23 @@
                 // Display the city and region
                 document.getElementById('aqi_header').innerText = `Next 6 hours for ${city}, ${region}`;
 
+                // get current date
+                let currentDate = new Date();
+                const offset = currentDate.getTimezoneOffset();
+
+                // format to YYYY-MM-DD
+                currentDate = new Date(currentDate.getTime() - (offset*60*1000));
+                const formattedToday = currentDate.toISOString().split('T')[0];
+                
+                // get tomorrow's date by adding 1 day to the current date
+                let tomorrowDate = new Date(currentDate);
+                tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+                // format to YYYY-MM-DD
+                tomorrowDate = new Date(tomorrowDate.getTime() - (offset*60*1000));
+                const formattedTomorrow = tomorrowDate.toISOString().split('T')[0];
+
                 // Then use the latitude and longitude to get the AQI
-                const aqiApiUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&hourly=us_aqi&timezone=auto`;
+                const aqiApiUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&hourly=us_aqi&timezone=auto&start_date=${formattedToday}&end_date=${formattedTomorrow}`;
                 fetch(aqiApiUrl)
                     .then(response => response.json())
                     .then(data => {
@@ -57,26 +72,25 @@
                         const aqiArray = data.hourly.us_aqi;
                         const table = document.getElementById('aqi_table');
 
-                        const currentHour = new Date().getHours();
-
-                        for(let i = 0; i < timeArray.length; i++) {
+                        let currentDateTime = currentDate.toISOString().slice(0,13) + ":00";
+                        let startDateTime = timeArray.find(dateTime => dateTime === currentDateTime);
+                        const startIndex = timeArray.findIndex(dateTime => dateTime === currentDateTime);
+                        for(let i = startIndex; i < (startIndex + 6); i++) {
                             const hour = new Date(timeArray[i]).getHours();
-                            if(hour >= currentHour && table.rows.length <= 6) {
-                                const row = table.insertRow(-1);
-                                row.className = 'border-t border-gray-600';
-                                const cell1 = row.insertCell(0);
-                                const cell2 = row.insertCell(1);
-                                const cell3 = row.insertCell(2);
-                                cell1.innerText = `${('0' + hour).slice(-2)}:${('0' + new Date(timeArray[i]).getMinutes()).slice(-2)}`;
-                                cell2.innerText = aqiArray[i];
+                            const row = table.insertRow(-1);
+                            row.className = 'border-t border-gray-600';
+                            const cell1 = row.insertCell(0);
+                            const cell2 = row.insertCell(1);
+                            const cell3 = row.insertCell(2);
+                            cell1.innerText = `${('0' + hour).slice(-2)}:${('0' + new Date(timeArray[i]).getMinutes()).slice(-2)}`;
+                            cell2.innerText = aqiArray[i];
 
-                                const aqiCategory = getCategory(aqiArray[i]);
+                            const aqiCategory = getCategory(aqiArray[i]);
 
-                                cell3.innerText = `${aqiCategory.name}`;
-                                cell2.style.color = aqiCategory.color;
+                            cell3.innerText = `${aqiCategory.name}`;
+                            cell2.style.color = aqiCategory.color;
 
-                                row.title = aqiCategory.description;
-                            }
+                            row.title = aqiCategory.description;
                         }
                     });
             });
