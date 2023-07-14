@@ -5,6 +5,7 @@
     <title>Air Quality Index</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body class="bg-gray-900 text-white flex items-center justify-center min-h-screen">
@@ -27,6 +28,9 @@
                 </div>
             </div>
         </form>
+        <div class="w-full md:max-w-2xl overflow-hidden">
+            <canvas id="aqiChart"></canvas>
+        </div>
         <table id="aqi_table"
             class="table-auto text-left whitespace-nowrap bg-gray-700 rounded-lg shadow-lg overflow-hidden w-full md:max-w-2xl">
             <thead class="bg-gray-800">
@@ -47,6 +51,7 @@
     <script>
         document.getElementById('year').textContent = new Date().getFullYear();
 
+        var myChart;
         const categories = [
             { name: "Good", color: "rgb(0, 228, 0)", range: [0, 50], description: "Air quality is satisfactory, and air pollution poses little or no risk." },
             { name: "Moderate", color: "yellow", range: [51, 100], description: "Air quality is acceptable. However, there may be a risk for some people, particularly those who are unusually sensitive to air pollution." },
@@ -67,7 +72,7 @@
             window.history.pushState({}, '', url);
 
             // Display the city and region
-            document.getElementById('aqi_header').innerText = `Next 6 hours for ${city}, ${region}`;
+            document.getElementById('aqi_header').innerText = `Next 12 hours for ${city}, ${region}`;
 
             // get current date
             let currentDate = new Date();
@@ -103,7 +108,9 @@
                     let currentDateTime = currentDate.toISOString().slice(0, 13) + ":00";
                     let startDateTime = timeArray.find(dateTime => dateTime === currentDateTime);
                     const startIndex = timeArray.findIndex(dateTime => dateTime === currentDateTime);
-                    for (let i = startIndex; i < (startIndex + 6); i++) {
+
+                    // Update the table
+                    for (let i = startIndex; i < (startIndex + 12); i++) {
                         const hour = new Date(timeArray[i]).getHours();
                         const row = table.insertRow(-1);
                         row.className = 'border-t border-gray-600';
@@ -120,6 +127,60 @@
 
                         row.title = aqiCategory.description;
                     }
+
+                    // Update the chart
+                    let chartLabels = [];
+                    let chartData = [];
+                    for (let i = startIndex; i < (startIndex + 12); i++) {
+                        const hour = new Date(timeArray[i]).getHours();
+                        chartLabels.push(`${('0' + hour).slice(-2)}:${('0' + new Date(timeArray[i]).getMinutes()).slice(-2)}`);
+                        chartData.push(aqiArray[i]);
+                    }
+
+                    // Remove the chart if it already exists
+                    chartElement = document.getElementById('aqiChart');
+                    var ctx = chartElement.getContext('2d');
+                    if (myChart) {
+                        myChart.destroy();
+                    }
+                    // Map colors to chartData
+                    let chartColors = chartData.map(value => {
+                        for (const category of categories) {
+                            if (value >= category.range[0] && value <= category.range[1]) {
+                                return category.color;
+                            }
+                        }
+                        return 'rgba(0,0,0,0.1)'; // default color
+                    });
+
+                    myChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: chartLabels,
+                            datasets: [{
+                                label: 'AQI',
+                                data: chartData,
+                                pointBackgroundColor: chartColors,
+                                pointBorderColor: chartColors,
+                                pointRadius: 3,
+                                borderColor: 'rgba(147, 149, 150, 0.8)', // set your desired line color here
+                                backgroundColor: 'rgba(147, 149, 150, 0.2)',
+                                borderWidth: 1.5,
+                                tension: 0.2,
+                                fill: true,
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    suggestedMax: 75,
+                                    suggestedMin: 0,
+                                },
+                            },
+                        }
+                    });
                 });
         }
 
